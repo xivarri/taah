@@ -37,7 +37,7 @@ def get_word_offline(words_to_langs, skip_prob):
   while True:
     word = random.choice(tuple(words_to_langs))
     langs = words_to_langs[word]
-    if len(langs) == 1 and random.random() < skip_prob[list(langs[0])]:
+    if len(langs) == 1 and list(langs)[0] in skip_prob and random.random() < skip_prob[list(langs)[0]]:
       continue
     return word, langs
 

@@ -8,7 +8,10 @@ import urllib.request
 from collections import defaultdict
 
 TITLE_RE = r'.*<title>(.+)</title>.*'
-LANGUAGE_RE = r'.*(?<!=)==([^={}<>]+)==(?!=).*'
+LANGUAGE_RE = r'.*(?<!=)==([^={}<>:&]+)==(?!=).*'
+# Languages for which words are dropped if this is the only language for the word.
+# This trims down the size of the output csv a bit.
+FORBIDDEN_SOLO_LANGUAGES = {'Translingual', 'English'}
 
 def get_script_dir():
   return os.path.dirname(os.path.abspath(__file__))
@@ -31,7 +34,7 @@ def process_page(page, langs, errors):
       if title is not None:
         errors['Multiple titles'] += 1
         return None
-      title = t.group(1)
+      title = t.group(1).strip()
       for c in banned_chars:
         if c in title:
           errors['Contains {}'.format(c)] += 1
@@ -48,8 +51,8 @@ def process_page(page, langs, errors):
   if len(ll) == 0:
     errors['No corresponding languages'] += 1
     return None
-  if len(ll) == 1 and ll[0] == 'Translingual':
-    errors['Only translingual'] += 1
+  if len(ll) == 1 and ll[0] in FORBIDDEN_SOLO_LANGUAGES:
+    errors['Only {}'.format(ll[0])] += 1
     return None
   return title + ':' + '&'.join(ll) + '\n'
 
@@ -82,12 +85,18 @@ def process_raw():
 def get_cached_data():
   cache = os.path.join(get_script_dir(), 'data/processed.csv')
   if os.path.exists(cache):
+    print('Loading words...')
     cached_words = {}
-    for line in cache:
+    f = open(cache)
+    freq = defaultdict(int)
+    for line in f:
       if len(line.split(':')) != 2:
-        print(line)
         return None
-      word, langs = line.split(':')
-      cached_words[word] = set(langs.split('&'))
+      word, langs = line.strip().split(':')
+      cached_words[word] = set(l.lower() for l in langs.split('&'))
+      #for l in cached_words[word]:
+      #  freq[l] += 1
+    f.close()
+    print('Ready to play!')
     return cached_words
   return None
