@@ -9,6 +9,14 @@ import taah
 taah.play()
 ```
 
+To download wiktionary data for offline play (now the default), first run the code below (it takes a while):
+
+```python
+from taah import data
+data.download_raw()
+data.process_raw()
+```
+
 Also pip install the packages you don't have. And this only works with Python3.
 
 Good luck!

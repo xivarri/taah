@@ -18,9 +18,8 @@ def get_script_dir():
 
 def download_raw():
   '''Download the latest EN Wiktionary dump, this can take a while, currently 900 MB.'''
-  #url = 'https://dumps.wikimedia.org/enwiktionary/latest/enwiktionary-latest-pages-meta-current.xml.bz2'
   url = 'https://dumps.wikimedia.org/enwiktionary/latest/enwiktionary-latest-pages-articles-multistream.xml.bz2'
-  output = os.path.join(get_script_dir(), 'data/raw-multi.xml.bz2')
+  output = os.path.join(get_script_dir(), 'data/raw.xml.bz2')
   print('Downloading pages-meta-current')
   urllib.request.urlretrieve(url, output)
 
