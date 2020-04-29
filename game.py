@@ -67,6 +67,8 @@ def play(skip_prob=DEFAULT_SKIP_PROB,
     if not word:
       continue
     print(word)
+    if not online:
+      words_to_langs.pop(word)
     rounds += 1
     if dist_test:
       for lang in langs:
